@@ -1,0 +1,92 @@
+---
+title: "Assignment-1"
+author: "Harika"
+date: "2023-09-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+Amazon_Alexa_Reviews <- read.csv("C://Users//Harika//Downloads//Amazon_Alexa_Reviews//Amazon_Alexa_Reviews.csv")
+###following is the dataset that have been imported.The dataset represents Amazon alexa reviews.
+```
+```{r}
+View(Amazon_Alexa_Reviews)
+###This dataset has been imported from https://www.kaggle.com/datasets/ruchihardaha/amazon-product-reviews
+```
+```{r}
+mean(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+median(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+mode(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+sd(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+range(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+max(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+min(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+###The above values represent descriptive statistics for a  selection of quantitative variables.The above values show the mean, mode, median, standard deviation, range, maximum and minimum for the quantitative variable.
+```
+
+
+```{r}
+table(Amazon_Alexa_Reviews$Review_Date)
+```
+```{r}
+###It creates a frequency table of unique values in "Review_Date" column.
+```
+
+```{r}
+str(Amazon_Alexa_Reviews$Review)
+```
+```{r}
+###The above values represent categorical descriptive analysis of the variables.
+```
+
+```{r}
+Amazon_Alexa_Reviews_transformed <- (Amazon_Alexa_Reviews$Rating - median(Amazon_Alexa_Reviews$Rating)/sd(Amazon_Alexa_Reviews$Rating))
+Amazon_Alexa_Reviews_transformed
+```
+```{r}
+###Transformation of variables has been done above.
+```
+
+```{r}
+h <- Amazon_Alexa_Reviews$Rating
+k <- Amazon_Alexa_Reviews$Photos.Uploaded.by.the.Customer
+plot(h,k, main = "scatterplot", xlab = "Rating", ylab = "Photos Uploaded by the Customer")
+```
+```{r}
+###The above graphical representation is a scatterplot.
+###The selected variables are Rating and Photos uploaded by the customers.
+```
+
+```{r}
+hist(Amazon_Alexa_Reviews$Rating)
+```
+```{r}
+###The above graphical representation is a histogram.
+```
+
+
+
+
+
+
+
+
+
+
+
+
