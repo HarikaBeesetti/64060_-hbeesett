@@ -1,0 +1,59 @@
+---
+title: "Assignment 1"
+author: "Harika"
+date: "2023-09-30"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(ISLR)
+```
+```{r}
+### The above syntax is used to call the library named "ISLR".
+```
+
+```{r}
+summary(Carseats)
+```
+```{r}
+### The above values represent the summary for the 'Carseats' dataset.
+### This dataset contains a total of 400 observations.
+```
+
+```{r}
+max(Carseats$Advertising)
+```
+```{r}
+### The above value represents the maximum value of the advertising attribute.
+```
+
+```{r}
+IQR(Carseats$Price)
+```
+```{r}
+### The above value represents the Interquartile Range for Price attribute.
+```
+
+```{r}
+plot(Carseats$Sales,Carseats$Price, main = "Current Pricing Sales", xlab="sales" , ylab="price")
+```
+```{r}
+### The above is the representation of scatter plot for sales against price from the Carseats dataset.
+```
+
+```{r}
+correlation <- cor.test(Carseats$Sales,Carseats$Price,method = "pearson")
+correlation
+```
+```{r}
+### The above value is the Pearson Correlation coefficient for the Sales and Price attributes, representing a negative correlation.
+```
+
+
+
+
+
+
