@@ -1,0 +1,200 @@
+---
+title: "Assignment - 2"
+author: "Harika"
+date: "2023-10-15"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+
+
+```{r}
+OnlineRetail <- read.csv("c:/Users/Harika/Downloads/Online_Retail.csv")
+```
+```{r}
+###The file is loaded into an R DataFrame by the above command.
+```
+
+```{r}
+summary(OnlineRetail)
+```
+```{r}
+###The above data represents the summary for the given dataset.
+```
+
+
+#1 > Show the breakdown of the number of transactions by countries i.e., how many transactions are in the dataset for each country (consider all records including cancelled transactions). Show this in total number and also in percentage. Show only countries accounting for more than 1% of the total transactions.
+
+```{r}
+Country_total_number <- table(OnlineRetail$Country)
+Country_total_number
+```
+```{r}
+###The data above represents the breakdown of the number of transactions by country from the given dataset.
+```
+
+```{r}
+transaction_percent <- round(100*prop.table(Country_total_number),digits = 2)
+transaction_percent
+```
+```{r}
+###The above data represents the percentage of transactions for each country.
+```
+
+```{r}
+total <- data.frame(Country=names(Country_total_number),
+                    TotalNumber=Country_total_number, 
+                    percentage=transaction_percent)
+total
+```
+```{r}
+###The data above combines the total number and percentage of transactions into a table.
+```
+
+```{r}
+total <- subset(total,transaction_percent>1)
+total
+```
+```{r}
+###The data above represents a subset of the table, showing only countries that account for more than 1% of the total transactions.
+```
+
+
+#2 > Create a new variable ‘TransactionValue’ that is the product of the existing ‘Quantity’ and ‘UnitPrice’ variables. Add this variable to the dataframe.
+
+```{r}
+library(dplyr)
+```
+```{r}
+###This command calls 'dplyr' library.
+```
+
+```{r}
+OnlineRetail <- OnlineRetail %>% mutate(TransactionValue= Quantity*UnitPrice)
+summary(OnlineRetail$TransactionValue)
+```
+```{r}
+###The above data represents the product of the 'Quantity' and 'UnitPrice' variables and assigned the result to a new variable named 'TransactionValue'.
+```
+
+#3 > Using the newly created variable, TransactionValue, show the breakdown of transaction values by countries i.e. how much money in total has been spent each country. Show this in total sum of transaction values. Show only countries with total transaction exceeding 130,000 British Pound.
+
+```{r}
+data <- summarise(group_by(OnlineRetail,Country),sum_1= sum(TransactionValue))
+Transaction <- filter(data,sum_1 > 130000)
+Transaction
+```
+```{r}
+###The data above shows the total transaction values for each country. It includes only those countries where the total transaction value exceeds 130,000 British pounds.
+```
+
+#5 > Plot the histogram of transaction values from Germany. Use the hist() function to plot.
+
+```{r}
+Germany_data <- subset(OnlineRetail,Country == "Germany")
+hist(Germany_data$TransactionValue, xlim = c(-600,900),breaks=100, xlab = "Transaction Values of Germany", main = "Histogram of Germany Transaction Values")
+```
+```{r}
+###This is a representation of the histogram for transaction values in Germany.
+```
+
+#6 > Which customer had the highest number of transactions? Which customer is most valuable (i.e.highest total sum of transactions)?
+
+```{r}
+OnlineRetail1 <- na.omit(OnlineRetail)
+result1 <- summarise(group_by(OnlineRetail1,CustomerID), sum2 = sum(TransactionValue))
+result1[which.max(result1$sum2),]
+```
+```{r}
+data2 <- table(OnlineRetail$CustomerID)
+data2 <- as.data.frame(data2)
+result2 <- data2[which.max(data2$Freq),]
+result2
+```
+```{r}
+### This data represents the customer with the highest number of transactions and the most valuable customer.
+```
+
+#7 > Calculate the percentage of missing values for each variable in the dataset.
+
+```{r}
+missing_values <- colMeans(is.na(OnlineRetail)*100)
+missing_values
+```
+```{r}
+###The data above represents Missing Values in the given dataset.
+```
+
+#8 > What are the number of transactions with missing CustomerID records by countries? 
+
+```{r}
+OnlineRetail2 <- OnlineRetail %>% filter(is.na(CustomerID)) %>% group_by(Country)
+summary(OnlineRetail2$Country)
+```
+```{r}
+###The data above shows the number of transactions with missing CustomerID records, records by countries.
+```
+
+#10 > In the retail sector, it is very important to understand the return rate of the goods purchased by customers. In this example, we can define this quantity, simply, as the ratio of the number of transactions cancelled (regardless of the transaction value) over the total number of transactions.With this definition, what is the return rate for the French customers? Consider the cancelled transactions as those where the ‘Quantity’ variable has a negative value.
+
+```{r}
+OnlineRetail_Table <- filter(OnlineRetail,Country == "France")
+Total_Row <- nrow(OnlineRetail_Table)
+Cancel <- nrow(subset(OnlineRetail_Table,TransactionValue<0))
+Cancel
+```
+```{r}
+NotCancel <- Total_Row-Cancel
+NotCancel
+```
+```{r}
+Return_Rate <- Cancel / Total_Row
+Return_Rate
+```
+```{r}
+###The data above represents values for both cancelled and not cancelled transactions, as well as the return rate.
+```
+
+#11 > What is the product that has generated the highest revenue for the retailer? (i.e. item with the highest total sum of ‘TransactionValue’)
+
+```{r}
+Transaction_Value <- tapply(OnlineRetail$TransactionValue, OnlineRetail$StockCode, sum)
+Transaction_Value[which.max(Transaction_Value)]
+```
+```{r}
+###The data above represents the item with the highest total sum of 'Transaction Value'.
+```
+
+#12 > How many unique customers are represented in the dataset? You can use unique() and length() functions. 
+
+```{r}
+unique_customers <- unique(OnlineRetail$CustomerID)
+length(unique_customers)
+```
+```{r}
+###The above value represents number of unique customers that are present in the given dataset.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
