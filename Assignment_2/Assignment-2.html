@@ -11,9 +11,9 @@
 
 <meta name="author" content="Harika" />
 
-<meta name="date" content="2023-10-15" />
+<meta name="date" content="2023-10-20" />
 
-<title>Assignment - 2</title>
+<title>Assignment-2</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,303 +350,569 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Assignment - 2</h1>
+<h1 class="title toc-ignore">Assignment-2</h1>
 <h4 class="author">Harika</h4>
-<h4 class="date">2023-10-15</h4>
+<h4 class="date">2023-10-20</h4>
 
 </div>
 
 
-<pre class="r"><code>OnlineRetail &lt;- read.csv(&quot;c:/Users/Harika/Downloads/Online_Retail.csv&quot;)</code></pre>
-<pre class="r"><code>###The file is loaded into an R DataFrame by the above command.</code></pre>
-<pre class="r"><code>summary(OnlineRetail)</code></pre>
-<pre><code>##   InvoiceNo          StockCode         Description           Quantity        
-##  Length:541909      Length:541909      Length:541909      Min.   :-80995.00  
-##  Class :character   Class :character   Class :character   1st Qu.:     1.00  
-##  Mode  :character   Mode  :character   Mode  :character   Median :     3.00  
-##                                                           Mean   :     9.55  
-##                                                           3rd Qu.:    10.00  
-##                                                           Max.   : 80995.00  
-##                                                                              
-##  InvoiceDate          UnitPrice           CustomerID       Country         
-##  Length:541909      Min.   :-11062.06   Min.   :12346    Length:541909     
-##  Class :character   1st Qu.:     1.25   1st Qu.:13953    Class :character  
-##  Mode  :character   Median :     2.08   Median :15152    Mode  :character  
-##                     Mean   :     4.61   Mean   :15288                      
-##                     3rd Qu.:     4.13   3rd Qu.:16791                      
-##                     Max.   : 38970.00   Max.   :18287                      
-##                                         NA&#39;s   :135080</code></pre>
+<pre class="r"><code>library(class)
+library(caret)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre class="r"><code>library(e1071)</code></pre>
+<pre class="r"><code>Universal_Bank &lt;- read.csv(&quot;c:/Users/Harika/Documents/FML/Dataset/UniversalBank.csv&quot;)
+dim(Universal_Bank)</code></pre>
+<pre><code>## [1] 5000   14</code></pre>
+<pre class="r"><code>###The file is loaded into an R DataFrame by the above command.
+
+####The &#39;Dim&#39; function displays total no.of Rows and Column.</code></pre>
+<pre class="r"><code>summary(Universal_Bank)</code></pre>
+<pre><code>##        ID            Age          Experience       Income          ZIP.Code    
+##  Min.   :   1   Min.   :23.00   Min.   :-3.0   Min.   :  8.00   Min.   : 9307  
+##  1st Qu.:1251   1st Qu.:35.00   1st Qu.:10.0   1st Qu.: 39.00   1st Qu.:91911  
+##  Median :2500   Median :45.00   Median :20.0   Median : 64.00   Median :93437  
+##  Mean   :2500   Mean   :45.34   Mean   :20.1   Mean   : 73.77   Mean   :93153  
+##  3rd Qu.:3750   3rd Qu.:55.00   3rd Qu.:30.0   3rd Qu.: 98.00   3rd Qu.:94608  
+##  Max.   :5000   Max.   :67.00   Max.   :43.0   Max.   :224.00   Max.   :96651  
+##      Family          CCAvg          Education        Mortgage    
+##  Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :  0.0  
+##  1st Qu.:1.000   1st Qu.: 0.700   1st Qu.:1.000   1st Qu.:  0.0  
+##  Median :2.000   Median : 1.500   Median :2.000   Median :  0.0  
+##  Mean   :2.396   Mean   : 1.938   Mean   :1.881   Mean   : 56.5  
+##  3rd Qu.:3.000   3rd Qu.: 2.500   3rd Qu.:3.000   3rd Qu.:101.0  
+##  Max.   :4.000   Max.   :10.000   Max.   :3.000   Max.   :635.0  
+##  Personal.Loan   Securities.Account   CD.Account         Online      
+##  Min.   :0.000   Min.   :0.0000     Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.000   1st Qu.:0.0000     1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :0.000   Median :0.0000     Median :0.0000   Median :1.0000  
+##  Mean   :0.096   Mean   :0.1044     Mean   :0.0604   Mean   :0.5968  
+##  3rd Qu.:0.000   3rd Qu.:0.0000     3rd Qu.:0.0000   3rd Qu.:1.0000  
+##  Max.   :1.000   Max.   :1.0000     Max.   :1.0000   Max.   :1.0000  
+##    CreditCard   
+##  Min.   :0.000  
+##  1st Qu.:0.000  
+##  Median :0.000  
+##  Mean   :0.294  
+##  3rd Qu.:1.000  
+##  Max.   :1.000</code></pre>
 <pre class="r"><code>###The above data represents the summary for the given dataset.</code></pre>
-<p>#1 &gt; Show the breakdown of the number of transactions by countries
-i.e., how many transactions are in the dataset for each country
-(consider all records including cancelled transactions). Show this in
-total number and also in percentage. Show only countries accounting for
-more than 1% of the total transactions.</p>
-<pre class="r"><code>Country_total_number &lt;- table(OnlineRetail$Country)
-Country_total_number</code></pre>
-<pre><code>## 
-##            Australia              Austria              Bahrain 
-##                 1259                  401                   19 
-##              Belgium               Brazil               Canada 
-##                 2069                   32                  151 
-##      Channel Islands               Cyprus       Czech Republic 
-##                  758                  622                   30 
-##              Denmark                 EIRE   European Community 
-##                  389                 8196                   61 
-##              Finland               France              Germany 
-##                  695                 8557                 9495 
-##               Greece            Hong Kong              Iceland 
-##                  146                  288                  182 
-##               Israel                Italy                Japan 
-##                  297                  803                  358 
-##              Lebanon            Lithuania                Malta 
-##                   45                   35                  127 
-##          Netherlands               Norway               Poland 
-##                 2371                 1086                  341 
-##             Portugal                  RSA         Saudi Arabia 
-##                 1519                   58                   10 
-##            Singapore                Spain               Sweden 
-##                  229                 2533                  462 
-##          Switzerland United Arab Emirates       United Kingdom 
-##                 2002                   68               495478 
-##          Unspecified                  USA 
-##                  446                  291</code></pre>
-<pre class="r"><code>###The data above represents the breakdown of the number of transactions by country from the given dataset.</code></pre>
-<pre class="r"><code>transaction_percent &lt;- round(100*prop.table(Country_total_number),digits = 2)
-transaction_percent</code></pre>
-<pre><code>## 
-##            Australia              Austria              Bahrain 
-##                 0.23                 0.07                 0.00 
-##              Belgium               Brazil               Canada 
-##                 0.38                 0.01                 0.03 
-##      Channel Islands               Cyprus       Czech Republic 
-##                 0.14                 0.11                 0.01 
-##              Denmark                 EIRE   European Community 
-##                 0.07                 1.51                 0.01 
-##              Finland               France              Germany 
-##                 0.13                 1.58                 1.75 
-##               Greece            Hong Kong              Iceland 
-##                 0.03                 0.05                 0.03 
-##               Israel                Italy                Japan 
-##                 0.05                 0.15                 0.07 
-##              Lebanon            Lithuania                Malta 
-##                 0.01                 0.01                 0.02 
-##          Netherlands               Norway               Poland 
-##                 0.44                 0.20                 0.06 
-##             Portugal                  RSA         Saudi Arabia 
-##                 0.28                 0.01                 0.00 
-##            Singapore                Spain               Sweden 
-##                 0.04                 0.47                 0.09 
-##          Switzerland United Arab Emirates       United Kingdom 
-##                 0.37                 0.01                91.43 
-##          Unspecified                  USA 
-##                 0.08                 0.05</code></pre>
-<pre class="r"><code>###The above data represents the percentage of transactions for each country.</code></pre>
-<pre class="r"><code>total &lt;- data.frame(Country=names(Country_total_number),
-                    TotalNumber=Country_total_number, 
-                    percentage=transaction_percent)
-total</code></pre>
-<pre><code>##                 Country     TotalNumber.Var1 TotalNumber.Freq
-## 1             Australia            Australia             1259
-## 2               Austria              Austria              401
-## 3               Bahrain              Bahrain               19
-## 4               Belgium              Belgium             2069
-## 5                Brazil               Brazil               32
-## 6                Canada               Canada              151
-## 7       Channel Islands      Channel Islands              758
-## 8                Cyprus               Cyprus              622
-## 9        Czech Republic       Czech Republic               30
-## 10              Denmark              Denmark              389
-## 11                 EIRE                 EIRE             8196
-## 12   European Community   European Community               61
-## 13              Finland              Finland              695
-## 14               France               France             8557
-## 15              Germany              Germany             9495
-## 16               Greece               Greece              146
-## 17            Hong Kong            Hong Kong              288
-## 18              Iceland              Iceland              182
-## 19               Israel               Israel              297
-## 20                Italy                Italy              803
-## 21                Japan                Japan              358
-## 22              Lebanon              Lebanon               45
-## 23            Lithuania            Lithuania               35
-## 24                Malta                Malta              127
-## 25          Netherlands          Netherlands             2371
-## 26               Norway               Norway             1086
-## 27               Poland               Poland              341
-## 28             Portugal             Portugal             1519
-## 29                  RSA                  RSA               58
-## 30         Saudi Arabia         Saudi Arabia               10
-## 31            Singapore            Singapore              229
-## 32                Spain                Spain             2533
-## 33               Sweden               Sweden              462
-## 34          Switzerland          Switzerland             2002
-## 35 United Arab Emirates United Arab Emirates               68
-## 36       United Kingdom       United Kingdom           495478
-## 37          Unspecified          Unspecified              446
-## 38                  USA                  USA              291
-##         percentage.Var1 percentage.Freq
-## 1             Australia            0.23
-## 2               Austria            0.07
-## 3               Bahrain            0.00
-## 4               Belgium            0.38
-## 5                Brazil            0.01
-## 6                Canada            0.03
-## 7       Channel Islands            0.14
-## 8                Cyprus            0.11
-## 9        Czech Republic            0.01
-## 10              Denmark            0.07
-## 11                 EIRE            1.51
-## 12   European Community            0.01
-## 13              Finland            0.13
-## 14               France            1.58
-## 15              Germany            1.75
-## 16               Greece            0.03
-## 17            Hong Kong            0.05
-## 18              Iceland            0.03
-## 19               Israel            0.05
-## 20                Italy            0.15
-## 21                Japan            0.07
-## 22              Lebanon            0.01
-## 23            Lithuania            0.01
-## 24                Malta            0.02
-## 25          Netherlands            0.44
-## 26               Norway            0.20
-## 27               Poland            0.06
-## 28             Portugal            0.28
-## 29                  RSA            0.01
-## 30         Saudi Arabia            0.00
-## 31            Singapore            0.04
-## 32                Spain            0.47
-## 33               Sweden            0.09
-## 34          Switzerland            0.37
-## 35 United Arab Emirates            0.01
-## 36       United Kingdom           91.43
-## 37          Unspecified            0.08
-## 38                  USA            0.05</code></pre>
-<pre class="r"><code>###The data above combines the total number and percentage of transactions into a table.</code></pre>
-<pre class="r"><code>total &lt;- subset(total,transaction_percent&gt;1)
-total</code></pre>
-<pre><code>##           Country TotalNumber.Var1 TotalNumber.Freq percentage.Var1
-## 11           EIRE             EIRE             8196            EIRE
-## 14         France           France             8557          France
-## 15        Germany          Germany             9495         Germany
-## 36 United Kingdom   United Kingdom           495478  United Kingdom
-##    percentage.Freq
-## 11            1.51
-## 14            1.58
-## 15            1.75
-## 36           91.43</code></pre>
-<pre class="r"><code>###The data above represents a subset of the table, showing only countries that account for more than 1% of the total transactions.</code></pre>
-<p>#2 &gt; Create a new variable ‘TransactionValue’ that is the product
-of the existing ‘Quantity’ and ‘UnitPrice’ variables. Add this variable
-to the dataframe.</p>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+<pre class="r"><code>Universal_Bank$ID &lt;- NULL
+Universal_Bank$ZIP.Code &lt;- NULL</code></pre>
+<pre class="r"><code>###In the command above, the &#39;ID&#39; and &#39;ZIP.Code&#39; columns were dropped.</code></pre>
+<pre class="r"><code>summary(Universal_Bank)</code></pre>
+<pre><code>##       Age          Experience       Income           Family     
+##  Min.   :23.00   Min.   :-3.0   Min.   :  8.00   Min.   :1.000  
+##  1st Qu.:35.00   1st Qu.:10.0   1st Qu.: 39.00   1st Qu.:1.000  
+##  Median :45.00   Median :20.0   Median : 64.00   Median :2.000  
+##  Mean   :45.34   Mean   :20.1   Mean   : 73.77   Mean   :2.396  
+##  3rd Qu.:55.00   3rd Qu.:30.0   3rd Qu.: 98.00   3rd Qu.:3.000  
+##  Max.   :67.00   Max.   :43.0   Max.   :224.00   Max.   :4.000  
+##      CCAvg          Education        Mortgage     Personal.Loan  
+##  Min.   : 0.000   Min.   :1.000   Min.   :  0.0   Min.   :0.000  
+##  1st Qu.: 0.700   1st Qu.:1.000   1st Qu.:  0.0   1st Qu.:0.000  
+##  Median : 1.500   Median :2.000   Median :  0.0   Median :0.000  
+##  Mean   : 1.938   Mean   :1.881   Mean   : 56.5   Mean   :0.096  
+##  3rd Qu.: 2.500   3rd Qu.:3.000   3rd Qu.:101.0   3rd Qu.:0.000  
+##  Max.   :10.000   Max.   :3.000   Max.   :635.0   Max.   :1.000  
+##  Securities.Account   CD.Account         Online         CreditCard   
+##  Min.   :0.0000     Min.   :0.0000   Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:0.0000     1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.000  
+##  Median :0.0000     Median :0.0000   Median :1.0000   Median :0.000  
+##  Mean   :0.1044     Mean   :0.0604   Mean   :0.5968   Mean   :0.294  
+##  3rd Qu.:0.0000     3rd Qu.:0.0000   3rd Qu.:1.0000   3rd Qu.:1.000  
+##  Max.   :1.0000     Max.   :1.0000   Max.   :1.0000   Max.   :1.000</code></pre>
+<pre class="r"><code>###The revised dataset summary is shown here after dropping the &#39;ID&#39; and &#39;ZIP.Code&#39; columns.</code></pre>
+<pre class="r"><code>Universal_Bank$Education &lt;- as.factor(Universal_Bank$Education)
+Dummy_Var &lt;- dummyVars(~., data = Universal_Bank)
+Universal_updated &lt;- as.data.frame(predict(Dummy_Var,Universal_Bank))</code></pre>
+<pre class="r"><code>###In the above command &#39;Education&#39; is converted to factor. And, Education is converted to dummy variables.</code></pre>
+<pre class="r"><code>set.seed(1)
+train_data &lt;- sample(row.names(Universal_updated), 0.6*dim(Universal_updated)[1])
+valid_data &lt;- setdiff(row.names(Universal_updated), train_data)
+train_df &lt;- Universal_updated[train_data,]
+valid_df &lt;- Universal_updated[valid_data,]
+summary(train_df)</code></pre>
+<pre><code>##       Age          Experience        Income           Family     
+##  Min.   :23.00   Min.   :-3.00   Min.   :  8.00   Min.   :1.000  
+##  1st Qu.:36.00   1st Qu.:10.00   1st Qu.: 39.00   1st Qu.:1.000  
+##  Median :45.00   Median :20.00   Median : 63.00   Median :2.000  
+##  Mean   :45.43   Mean   :20.19   Mean   : 73.08   Mean   :2.388  
+##  3rd Qu.:55.00   3rd Qu.:30.00   3rd Qu.: 98.00   3rd Qu.:3.000  
+##  Max.   :67.00   Max.   :43.00   Max.   :224.00   Max.   :4.000  
+##      CCAvg         Education.1      Education.2     Education.3    
+##  Min.   : 0.000   Min.   :0.0000   Min.   :0.000   Min.   :0.0000  
+##  1st Qu.: 0.700   1st Qu.:0.0000   1st Qu.:0.000   1st Qu.:0.0000  
+##  Median : 1.500   Median :0.0000   Median :0.000   Median :0.0000  
+##  Mean   : 1.915   Mean   :0.4173   Mean   :0.285   Mean   :0.2977  
+##  3rd Qu.: 2.500   3rd Qu.:1.0000   3rd Qu.:1.000   3rd Qu.:1.0000  
+##  Max.   :10.000   Max.   :1.0000   Max.   :1.000   Max.   :1.0000  
+##     Mortgage      Personal.Loan     Securities.Account   CD.Account     
+##  Min.   :  0.00   Min.   :0.00000   Min.   :0.0000     Min.   :0.00000  
+##  1st Qu.:  0.00   1st Qu.:0.00000   1st Qu.:0.0000     1st Qu.:0.00000  
+##  Median :  0.00   Median :0.00000   Median :0.0000     Median :0.00000  
+##  Mean   : 57.34   Mean   :0.09167   Mean   :0.1003     Mean   :0.05367  
+##  3rd Qu.:102.00   3rd Qu.:0.00000   3rd Qu.:0.0000     3rd Qu.:0.00000  
+##  Max.   :635.00   Max.   :1.00000   Max.   :1.0000     Max.   :1.00000  
+##      Online         CreditCard    
+##  Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :1.0000   Median :0.0000  
+##  Mean   :0.5847   Mean   :0.2927  
+##  3rd Qu.:1.0000   3rd Qu.:1.0000  
+##  Max.   :1.0000   Max.   :1.0000</code></pre>
+<pre class="r"><code>###In the given command, the data has been split into a 60% training set and a 40% validation set, ensuring that the same sample is obtained upon rerunning the code.</code></pre>
+<pre class="r"><code>train_norm_df &lt;- train_df[,-10]
+valid_norm_df &lt;- valid_df[,10]
+
+norm_values &lt;- preProcess(train_df[,-10], method = c(&quot;center&quot;,&quot;scale&quot;))
+
+train_norm_df &lt;- predict(norm_values, train_df[,-10])
+valid_norm_df &lt;- predict(norm_values, valid_df[,-10])</code></pre>
+<pre class="r"><code>###In this command, note that &#39;Personal Income&#39; is the 10th Variable that has been normalized.</code></pre>
+<p>#1 &gt; Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg =
+2, Education_1 = 0, Education_2 =1, Education_3 = 0, Mortgage = 0,
+Securities Account = 0, CD Account = 0, Online = 1, and Credit Card = 1.
+Perform a k-NN classification with all predictors except ID and ZIP
+codeusing k = 1. Remember to transform categorical predictors with more
+than two categories into dummy variables first. Specify the success
+class as 1 (loan acceptance), and use the default cutoff value of 0.5.
+How would this customer be classified?</p>
+<pre class="r"><code>New_Customer &lt;- data.frame( Age = 40,
+  Experience = 10,
+  Income = 84,
+  Family = 2,
+  CCAvg = 2,
+  Education.1 = 0,
+  Education.2 = 1,
+  Education.3 = 0,
+  Mortgage = 0,
+  Securities.Account = 0,
+  CD.Account = 0,
+  Online = 1,
+  CreditCard = 1)
+
+New_Customer_norm &lt;- New_Customer
+New_Customer_norm &lt;- predict(norm_values, New_Customer_norm)</code></pre>
+<pre class="r"><code>###In the above command, all the data elements were assigned to a new variable called &#39;New_Customer,&#39; and &#39;New_Customer&#39; was then normalized.</code></pre>
+<pre class="r"><code>knn.prediction1 &lt;- class::knn(train = train_norm_df, test = New_Customer_norm, cl = train_df$Personal.Loan, k = 1)
+knn.prediction1</code></pre>
+<pre><code>## [1] 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>###In the above command, &#39;Prediction 1&#39; was made using &#39;Knn&#39; (k-nearest neighbors).</code></pre>
+<p>#2 &gt; What is a choice of k that balances between overfitting and
+ignoring the predictor information?</p>
+<pre class="r"><code>accuracy.df &lt;- data.frame(k = seq(1, 15, 1), overallaccuracy = rep(0, 15))
+for(i in 1:15) 
+  {
+  knn.pred &lt;- class::knn(train = train_norm_df, 
+                         test = valid_norm_df, 
+                         cl = train_df$Personal.Loan, k = i)
+  accuracy.df[i, 2] &lt;- confusionMatrix(knn.pred, 
+                                       as.factor(valid_df$Personal.Loan),positive = &quot;1&quot;)$overall[1]
+}
+
+which(accuracy.df[,2] == max(accuracy.df[,2]))</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>### In the above command, calculate the accuracy for each value of &#39;k,&#39; while specifying a range of k values to consider.</code></pre>
+<p>#3 &gt; Show the confusion matrix for the validation data that
+results from using the best k.</p>
+<pre class="r"><code>knn.prediction2 &lt;- class::knn(train = train_norm_df,
+                        test = valid_norm_df,
+                        cl= train_df$Personal.Loan, k= 3)
+knn.prediction2</code></pre>
+<pre><code>##    [1] 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 1 0 0
+##   [38] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+##   [75] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [112] 0 0 1 0 0 1 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0
+##  [149] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+##  [186] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [223] 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [260] 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 1 0 0 0 0 0 1
+##  [297] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0
+##  [334] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+##  [371] 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0
+##  [408] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [445] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+##  [482] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0
+##  [519] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0
+##  [556] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0
+##  [593] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0
+##  [630] 0 0 0 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [667] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [704] 0 0 0 0 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [741] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [778] 0 0 1 0 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+##  [815] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+##  [852] 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0
+##  [889] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 1 0 0 0
+##  [926] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+##  [963] 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+## [1000] 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1037] 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+## [1074] 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0
+## [1111] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0
+## [1148] 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0
+## [1185] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1222] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1259] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1296] 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0
+## [1333] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1370] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0
+## [1407] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1444] 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1481] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1518] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1555] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1592] 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0
+## [1629] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+## [1666] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1703] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0
+## [1740] 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0
+## [1777] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1814] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+## [1851] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1888] 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1925] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0
+## [1962] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1999] 0 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>confusion.matrix &lt;- confusionMatrix(knn.prediction2, as.factor(valid_df$Personal.Loan), positive = &quot;1&quot;)
+confusion.matrix</code></pre>
+<pre><code>## Confusion Matrix and Statistics
 ## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
+##           Reference
+## Prediction    0    1
+##          0 1786   63
+##          1    9  142
+##                                           
+##                Accuracy : 0.964           
+##                  95% CI : (0.9549, 0.9717)
+##     No Information Rate : 0.8975          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.7785          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 4.208e-10       
+##                                           
+##             Sensitivity : 0.6927          
+##             Specificity : 0.9950          
+##          Pos Pred Value : 0.9404          
+##          Neg Pred Value : 0.9659          
+##              Prevalence : 0.1025          
+##          Detection Rate : 0.0710          
+##    Detection Prevalence : 0.0755          
+##       Balanced Accuracy : 0.8438          
+##                                           
+##        &#39;Positive&#39; Class : 1               
+## </code></pre>
+<pre class="r"><code>###The above is confusion matrix for the validation data that results from using the best k.</code></pre>
+<p>#4 &gt; Consider the following customer: Age = 40, Experience = 10,
+Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1,
+Education_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0,
+Online = 1 and Credit Card = 1. Classify the customer using the best
+k.</p>
+<pre class="r"><code>New_Customer1 &lt;- data.frame(
+  Age = 40,
+  Experience = 10,
+  Income = 84,
+  Family = 2,
+  CCAvg = 2,
+  Education.1 = 0,
+  Education.2 = 1,
+  Education.3 = 0,
+  Mortgage = 0,
+  Securities.Account = 0,
+  CD.Account = 0,
+  Online = 1,
+  CreditCard = 1
+)
+
+
+New_Cust_norm1 &lt;- New_Customer1
+New_Cust_norm1 &lt;- predict(norm_values, New_Cust_norm1)
+
+
+knn.prediction3 &lt;- class::knn(train = train_norm_df,
+                        test = New_Cust_norm1,
+                        cl= train_df$Personal.Loan, k= 3)
+knn.prediction3</code></pre>
+<pre><code>## [1] 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>###In the above command, classified the customer using the best k.</code></pre>
+<p>#5 &gt; Repartition the data, this time into training, validation,
+and test sets (50% : 30% : 20%). Apply the k-NN method with the k chosen
+above. Compare the confusion matrix of the test set with that of the
+training and validation sets. Comment on the differences and their
+reason.</p>
+<pre class="r"><code>set.seed(1)  
+
+train_index1 &lt;- sample(row.names(Universal_updated), 0.5*dim(Universal_updated)[1])
+train_df1 &lt;-Universal_updated[train_index1,]
+
+valid_index1 &lt;- setdiff(row.names(Universal_updated), train_index1)
+valid_df1 &lt;- Universal_updated[valid_index1, ]
+
+valid_index2 &lt;- sample(row.names(valid_df1), 0.6*dim(valid_df1)[1])
+valid_df2 &lt;- valid_df1[valid_index2, ]
+
+test_index1 &lt;- setdiff(row.names(valid_df1),valid_index2)
+test_df1 &lt;- valid_df1[test_index1, ]</code></pre>
+<pre class="r"><code>###In the above command, splitting the data into 50% for training set, 30% for validation set and 20% for testing set.</code></pre>
+<pre class="r"><code>train_norm_df1 &lt;- train_df1[,-10]
+valid_norm_df2 &lt;- valid_df2[,-10]
+test_norm_df1 &lt;- test_df1[,-10]
+
+norm_values1 &lt;- preProcess(train_df1[,-10], method = c(&quot;center&quot;, &quot;scale&quot;))
+
+train_norm_df1 &lt;- predict(norm_values1, train_df1[,-10])
+valid_norm_df2 &lt;- predict(norm_values1, valid_df2[,-10])
+
+test_norm_df1 &lt;- predict(norm_values1, test_df1[,-10])</code></pre>
+<pre class="r"><code>### Normalized the data above.</code></pre>
+<pre class="r"><code>knn_prediction4 &lt;- class::knn(train = train_norm_df1,
+                        test = train_norm_df1,
+                        cl= train_df1$Personal.Loan, k= 3)
+knn_prediction4</code></pre>
+<pre><code>##    [1] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##   [38] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0
+##   [75] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [149] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 1 0 0 0 0 0 0 0
+##  [186] 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [223] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0
+##  [260] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [297] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [334] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+##  [371] 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+##  [408] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [445] 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [482] 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [519] 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 1 0 0 0 0 0 1 1 0
+##  [556] 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [593] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [630] 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [667] 0 0 1 1 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+##  [704] 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+##  [741] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [778] 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [815] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0
+##  [852] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [889] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [926] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0
+##  [963] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+## [1000] 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1037] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1074] 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+## [1111] 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+## [1148] 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0
+## [1185] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 1
+## [1222] 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1259] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0
+## [1296] 0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1333] 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0
+## [1370] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0
+## [1407] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1444] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1
+## [1481] 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0
+## [1518] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0
+## [1555] 1 0 0 1 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+## [1592] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1629] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1666] 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+## [1703] 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1740] 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1777] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1814] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0
+## [1851] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1888] 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+## [1925] 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1962] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1999] 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0
+## [2036] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+## [2073] 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [2110] 1 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 0 0 0
+## [2147] 0 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+## [2184] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1
+## [2221] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0
+## [2258] 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1
+## [2295] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+## [2332] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [2369] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [2406] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0 0 0 0 0 0 0 1 0 1
+## [2443] 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [2480] 1 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>###The above is knn-prediction of 50% Training data.</code></pre>
+<pre class="r"><code>confusion_matrix1 &lt;- confusionMatrix(knn_prediction4, as.factor(train_df1$Personal.Loan))
+confusion_matrix1</code></pre>
+<pre><code>## Confusion Matrix and Statistics
 ## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>###This command calls &#39;dplyr&#39; library.</code></pre>
-<pre class="r"><code>OnlineRetail &lt;- OnlineRetail %&gt;% mutate(TransactionValue= Quantity*UnitPrice)
-summary(OnlineRetail$TransactionValue)</code></pre>
-<pre><code>##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
-## -168469.60       3.40       9.75      17.99      17.40  168469.60</code></pre>
-<pre class="r"><code>###The above data represents the product of the &#39;Quantity&#39; and &#39;UnitPrice&#39; variables and assigned the result to a new variable named &#39;TransactionValue&#39;.</code></pre>
-<p>#3 &gt; Using the newly created variable, TransactionValue, show the
-breakdown of transaction values by countries i.e. how much money in
-total has been spent each country. Show this in total sum of transaction
-values. Show only countries with total transaction exceeding 130,000
-British Pound.</p>
-<pre class="r"><code>data &lt;- summarise(group_by(OnlineRetail,Country),sum_1= sum(TransactionValue))
-Transaction &lt;- filter(data,sum_1 &gt; 130000)
-Transaction</code></pre>
-<pre><code>## # A tibble: 6 × 2
-##   Country           sum_1
-##   &lt;chr&gt;             &lt;dbl&gt;
-## 1 Australia       137077.
-## 2 EIRE            263277.
-## 3 France          197404.
-## 4 Germany         221698.
-## 5 Netherlands     284662.
-## 6 United Kingdom 8187806.</code></pre>
-<pre class="r"><code>###The data above shows the total transaction values for each country. It includes only those countries where the total transaction value exceeds 130,000 British pounds.</code></pre>
-<p>#5 &gt; Plot the histogram of transaction values from Germany. Use
-the hist() function to plot.</p>
-<pre class="r"><code>Germany_data &lt;- subset(OnlineRetail,Country == &quot;Germany&quot;)
-hist(Germany_data$TransactionValue, xlim = c(-600,900),breaks=100, xlab = &quot;Transaction Values of Germany&quot;, main = &quot;Histogram of Germany Transaction Values&quot;)</code></pre>
-<p><img src="data:image/png;base64,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" width="672" /></p>
-<pre class="r"><code>###This is a representation of the histogram for transaction values in Germany.</code></pre>
-<p>#6 &gt; Which customer had the highest number of transactions? Which
-customer is most valuable (i.e.highest total sum of transactions)?</p>
-<pre class="r"><code>OnlineRetail1 &lt;- na.omit(OnlineRetail)
-result1 &lt;- summarise(group_by(OnlineRetail1,CustomerID), sum2 = sum(TransactionValue))
-result1[which.max(result1$sum2),]</code></pre>
-<pre><code>## # A tibble: 1 × 2
-##   CustomerID    sum2
-##        &lt;int&gt;   &lt;dbl&gt;
-## 1      14646 279489.</code></pre>
-<pre class="r"><code>data2 &lt;- table(OnlineRetail$CustomerID)
-data2 &lt;- as.data.frame(data2)
-result2 &lt;- data2[which.max(data2$Freq),]
-result2</code></pre>
-<pre><code>##       Var1 Freq
-## 4043 17841 7983</code></pre>
-<pre class="r"><code>### This data represents the customer with the highest number of transactions and the most valuable customer.</code></pre>
-<p>#7 &gt; Calculate the percentage of missing values for each variable
-in the dataset.</p>
-<pre class="r"><code>missing_values &lt;- colMeans(is.na(OnlineRetail)*100)
-missing_values</code></pre>
-<pre><code>##        InvoiceNo        StockCode      Description         Quantity 
-##          0.00000          0.00000          0.00000          0.00000 
-##      InvoiceDate        UnitPrice       CustomerID          Country 
-##          0.00000          0.00000         24.92669          0.00000 
-## TransactionValue 
-##          0.00000</code></pre>
-<pre class="r"><code>###The data above represents Missing Values in the given dataset.</code></pre>
-<p>#8 &gt; What are the number of transactions with missing CustomerID
-records by countries?</p>
-<pre class="r"><code>OnlineRetail2 &lt;- OnlineRetail %&gt;% filter(is.na(CustomerID)) %&gt;% group_by(Country)
-summary(OnlineRetail2$Country)</code></pre>
-<pre><code>##    Length     Class      Mode 
-##    135080 character character</code></pre>
-<pre class="r"><code>###The data above shows the number of transactions with missing CustomerID records, records by countries.</code></pre>
-<p>#10 &gt; In the retail sector, it is very important to understand the
-return rate of the goods purchased by customers. In this example, we can
-define this quantity, simply, as the ratio of the number of transactions
-cancelled (regardless of the transaction value) over the total number of
-transactions.With this definition, what is the return rate for the
-French customers? Consider the cancelled transactions as those where the
-‘Quantity’ variable has a negative value.</p>
-<pre class="r"><code>OnlineRetail_Table &lt;- filter(OnlineRetail,Country == &quot;France&quot;)
-Total_Row &lt;- nrow(OnlineRetail_Table)
-Cancel &lt;- nrow(subset(OnlineRetail_Table,TransactionValue&lt;0))
-Cancel</code></pre>
-<pre><code>## [1] 149</code></pre>
-<pre class="r"><code>NotCancel &lt;- Total_Row-Cancel
-NotCancel</code></pre>
-<pre><code>## [1] 8408</code></pre>
-<pre class="r"><code>Return_Rate &lt;- Cancel / Total_Row
-Return_Rate</code></pre>
-<pre><code>## [1] 0.01741264</code></pre>
-<pre class="r"><code>###The data above represents values for both cancelled and not cancelled transactions, as well as the return rate.</code></pre>
-<p>#11 &gt; What is the product that has generated the highest revenue
-for the retailer? (i.e. item with the highest total sum of
-‘TransactionValue’)</p>
-<pre class="r"><code>Transaction_Value &lt;- tapply(OnlineRetail$TransactionValue, OnlineRetail$StockCode, sum)
-Transaction_Value[which.max(Transaction_Value)]</code></pre>
-<pre><code>##      DOT 
-## 206245.5</code></pre>
-<pre class="r"><code>###The data above represents the item with the highest total sum of &#39;Transaction Value&#39;.</code></pre>
-<p>#12 &gt; How many unique customers are represented in the dataset?
-You can use unique() and length() functions.</p>
-<pre class="r"><code>unique_customers &lt;- unique(OnlineRetail$CustomerID)
-length(unique_customers)</code></pre>
-<pre><code>## [1] 4373</code></pre>
-<pre class="r"><code>###The above value represents number of unique customers that are present in the given dataset.</code></pre>
+##           Reference
+## Prediction    0    1
+##          0 2263   54
+##          1    5  178
+##                                          
+##                Accuracy : 0.9764         
+##                  95% CI : (0.9697, 0.982)
+##     No Information Rate : 0.9072         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.8452         
+##                                          
+##  Mcnemar&#39;s Test P-Value : 4.129e-10      
+##                                          
+##             Sensitivity : 0.9978         
+##             Specificity : 0.7672         
+##          Pos Pred Value : 0.9767         
+##          Neg Pred Value : 0.9727         
+##              Prevalence : 0.9072         
+##          Detection Rate : 0.9052         
+##    Detection Prevalence : 0.9268         
+##       Balanced Accuracy : 0.8825         
+##                                          
+##        &#39;Positive&#39; Class : 0              
+## </code></pre>
+<pre class="r"><code>knn_prediction5 &lt;- class::knn(train = train_norm_df1,
+                        test = valid_norm_df2,
+                        cl= train_df1$Personal.Loan, k= 3)
+knn_prediction5</code></pre>
+<pre><code>##    [1] 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0
+##   [38] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##   [75] 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [149] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [186] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [223] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0
+##  [260] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [297] 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1
+##  [334] 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0
+##  [371] 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [408] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [445] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [482] 0 0 1 0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+##  [519] 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 1 0 0
+##  [556] 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0
+##  [593] 0 0 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [630] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0
+##  [667] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+##  [704] 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [741] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [778] 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+##  [815] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [852] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [889] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [926] 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+##  [963] 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1000] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1037] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+## [1074] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1111] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0
+## [1148] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+## [1185] 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1222] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0
+## [1259] 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1296] 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0
+## [1333] 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1370] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0
+## [1407] 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1444] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1481] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>###The above is knn-prediction of 30% Validation data.</code></pre>
+<pre class="r"><code>confusion_matrix2 &lt;- confusionMatrix(knn_prediction5, as.factor(valid_df2$Personal.Loan))
+confusion_matrix2</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 1358   42
+##          1    6   94
+##                                           
+##                Accuracy : 0.968           
+##                  95% CI : (0.9578, 0.9763)
+##     No Information Rate : 0.9093          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.7797          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 4.376e-07       
+##                                           
+##             Sensitivity : 0.9956          
+##             Specificity : 0.6912          
+##          Pos Pred Value : 0.9700          
+##          Neg Pred Value : 0.9400          
+##              Prevalence : 0.9093          
+##          Detection Rate : 0.9053          
+##    Detection Prevalence : 0.9333          
+##       Balanced Accuracy : 0.8434          
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+<pre class="r"><code>knn_prediction6 &lt;- class::knn(train = train_norm_df1,
+                        test = test_norm_df1,
+                        cl= train_df1$Personal.Loan, k= 3)
+knn_prediction6</code></pre>
+<pre><code>##    [1] 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##   [38] 0 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##   [75] 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [112] 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0 0 0
+##  [149] 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 1 0
+##  [186] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1
+##  [223] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+##  [260] 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [297] 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [334] 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [371] 0 1 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [408] 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0
+##  [445] 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0
+##  [482] 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0
+##  [519] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+##  [556] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1
+##  [593] 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+##  [630] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [667] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
+##  [704] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [741] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+##  [778] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+##  [815] 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+##  [852] 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0
+##  [889] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1
+##  [926] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0
+##  [963] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [1000] 0
+## Levels: 0 1</code></pre>
+<pre class="r"><code>###The above is knn-prediction of 20% Testing data.</code></pre>
+<pre class="r"><code>confusion_matrix3 &lt;- confusionMatrix(knn_prediction6, as.factor(test_df1$Personal.Loan))
+confusion_matrix3</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction   0   1
+##          0 884  35
+##          1   4  77
+##                                           
+##                Accuracy : 0.961           
+##                  95% CI : (0.9471, 0.9721)
+##     No Information Rate : 0.888           
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.777           
+##                                           
+##  Mcnemar&#39;s Test P-Value : 1.556e-06       
+##                                           
+##             Sensitivity : 0.9955          
+##             Specificity : 0.6875          
+##          Pos Pred Value : 0.9619          
+##          Neg Pred Value : 0.9506          
+##              Prevalence : 0.8880          
+##          Detection Rate : 0.8840          
+##    Detection Prevalence : 0.9190          
+##       Balanced Accuracy : 0.8415          
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
 
 
 
