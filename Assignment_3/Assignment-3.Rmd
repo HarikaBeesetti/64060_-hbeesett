@@ -1,0 +1,143 @@
+---
+title: "Assignment-3"
+author: "Harika"
+date: "2023-11-05"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r}
+library(caret)
+library(ggplot2)
+library(ISLR)
+library(class)
+library(reshape2)
+#install.packages("melt")
+library(melt)
+```
+
+1.DATA LOADING
+
+```{r}
+File_path <- "C:/Users/Harika/Downloads/UniversalBank-1.csv"
+```
+
+```{r}
+###specified the file path above that to be loaded.
+```
+
+```{r}
+UniversalBank_1 <- read.csv("C:/Users/Harika/Downloads/UniversalBank-1.csv")
+```
+
+```{r}
+### Loaded the dataset above
+```
+
+```{r}
+UniversalBank_1$Personal.Loan <- as.factor(UniversalBank_1$Personal.Loan)
+UniversalBank_1$Online <- as.factor(UniversalBank_1$Online)
+UniversalBank_1$CreditCard <- as.factor(UniversalBank_1$CreditCard)
+```
+
+```{r}
+summary(UniversalBank_1)
+```
+```{r}
+###the above data represents summary for the given dataset.
+```
+
+
+2.DATA PARTITIONING (60:40)
+
+```{r}
+set.seed(23)
+```
+
+```{r}
+###to set a seed for reproducibility.
+```
+
+```{r}
+SplitData <- createDataPartition(UniversalBank_1$Personal.Loan, p=0.60, list = FALSE)
+train_data <- UniversalBank_1[SplitData,]
+test_data <- UniversalBank_1[-SplitData,]
+```
+
+```{r}
+###the data is now splitted into training (60%) and testing (40%) sets above.
+```
+
+```{r}
+dim(train_data)
+dim(test_data)
+```
+```{r}
+###to check the dimensions of the training and testing sets above.
+```
+
+>A. TO CREATE A PIVOT TABLE
+
+```{r}
+Pivot_Table1 <- ftable(train_data$CreditCard, train_data$Personal.Loan, train_data$Online)
+Pivot_Table1
+```
+```{r}
+###the pivot table created above.
+```
+
+>B. Based on the pivot table created, we can determine the probability that this customer would accept the loan offer, when equals 53/(53+497) ~ 0.096.
+
+>C. Two separate pivot tables were created using the training data. Where one will have the internet (columns) are a function of the personal loan (rows), and whereas the credit card is a function of the other.
+
+```{r}
+Melt_1 <- melt(train_data,id=c("Personal.Loan"),variable="Online")
+Melt_2 <- melt(train_data,id=c("Personal.Loan"),variable="CreditCard")
+```
+```{r}
+cast1 = dcast(Melt_1, Personal.Loan~Online)
+```
+```{r}
+cast2 = dcast(Melt_2, Personal.Loan~CreditCard)
+```
+>D. Calculating specified amounts P(A/B) signifies the probability which A will occur given B.
+
+```{r}
+ftable(train_data$Personal.Loan, train_data$Online)
+```
+```{r}
+ftable(train_data$Personal.Loan, train_data$CreditCard)
+```
+>ftable(train_data[,10]) #10 is Personal.Loan column.
+
+1. P(CC = 1 | Loan = 1) = (92/92+196) = 0.319
+2. P(Online = 1 | Loan = 1) = (167/167+121) = 0.579
+3. P(Loan = 1) = (288/288+2712) = 0.096
+4. P(CC = 1 | Loan = 0) = (812/812+1900) = 0.299
+5. P(Online = 1 | Loan = 0) = (1624/ 1624+1088) = 0.598
+6. P(Loan = 0) = (2712/ 2712+288) = 0.904
+
+>E. Using quantities computed above to compute the naive bayes probability P(Loan=1|CC=1, Online=1).
+
+(0.319*0.579*0.096)/(0.319*0.579*0.096)+(0.299*0.598*0.904) ~ 0.098
+
+>F.In question B, we calculated a probability value of 0.096, and in the previous question, we found a probability value of 0.098. These values have a slight difference only. As of question E, we took into account more dependent information, but it seems that the value from question B is more accurate and specific comparitively.
+
+>G.Implementing Naives Bayes below
+
+```{r}
+#install.packages("naivebayes")
+library(naivebayes)
+```
+
+```{r}
+Naive_Bayes_Model <- naive_bayes(Personal.Loan~Online+CreditCard,data = train_data)
+Naive_Bayes_Model
+```
+```{r}
+###
+```
+
+
