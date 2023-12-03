@@ -1,0 +1,214 @@
+---
+title: "Assignment-5"
+author: "Harika"
+date: "2023-12-03"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+Pre-processing the Data below: 
+
+```{r}
+Cereals <- read.csv("C:/Users/Harika/Downloads/Cereals.csv")
+Cereals_Data <- read.csv("C:/Users/Harika/Downloads/Cereals.csv")
+str(Cereals)
+### structure of the dataset.
+```
+```{r}
+head(Cereals)
+### to display the first few rows and columns.
+```
+```{r}
+sum(is.na(Cereals))
+### to count the total no.of missing values.
+```
+```{r}
+Cereals <- na.omit(Cereals)
+Cereals_Data <- na.omit(Cereals_Data)
+### to omit the missing values from the given dataset.
+sum(is.na(Cereals))
+
+```
+
+```{r}
+rownames(Cereals) <- Cereals$name
+rownames(Cereals_Data) <- Cereals_Data$name
+### To convert breakfast cereal names to row names for visualizing the clusters later.
+```
+
+
+```{r}
+Cereals$name = NULL
+Cereals_Data$name = NULL
+### to remove the "name" column as it does not contain any information useful.
+```
+
+>>>Before calculating any distance measure, it's essential to adjust the data. This is because variables with larger ranges can have a considerable impact on the distance calculation.
+
+```{r}
+Cereals <- scale(Cereals[,3:15])
+```
+
+>>>To do hierarchical clustering we used euclidean distance on the given dataset.
+
+```{r}
+distance <- dist(Cereals, method = "euclidean")
+#Dissimilarity matrix
+hier_clust <- hclust(distance, method = "complete")
+#applied hierarchical clustering using complete linkage.
+plot(hier_clust, cex = 0.6, hang = -1)
+#to plot the dendrogram.
+```
+
+>>>The clustering methods, such as single linkage, complete linkage, and average linkage, each have their own agglomerative coefficients.
+
+```{r}
+library(cluster)
+hier_clust_single <- agnes(Cereals, method = "single")
+pltree(hier_clust_single, cex = 0.6, hang = -1, main = " Dendrogram of agnes ")
+```
+
+
+
+```{r}
+hier_clust_avg <- agnes(Cereals, method = "average")
+pltree(hier_clust_avg, cex = 0.6, hang = -1, main = " Dendrogram of agnes ")
+```
+
+>> To calculate the agnes coefficient for each approach.
+
+```{r}
+#install.packages("purrr")
+library(purrr)
+```
+
+
+```{r}
+m <- c( "average", "single", "complete", "ward")
+# to asses the methods.
+names(m) <- c( "average", "single", "complete", "ward")
+# here function is used to compute coefficient.
+ac <- function(x) {
+  agnes(Cereals, method = x)$ac
+}
+map_dbl(m, ac) 
+```
+>>> Ward is considered the most effective way to connect things, scoring a high 0.9046042 on the agglomerative coefficient.
+
+Using the wards approach to visualize the dendrogram:
+
+```{r}
+hier_clust_Ward <- agnes(Cereals, method = "ward")
+pltree(hier_clust_Ward, cex = 0.6, hang = -1, main = " Dendrogram of agnes ")
+```
+
+To Cut the dendrogram with cutree() so that we can find sub-groups (i.e. clusters):
+
+```{r}
+distance <- dist(Cereals, method = "euclidean")
+### to create the distance matrix.
+hier_clust_Ward_clust <- hclust(distance, method = "ward.D2")
+### ward's method for hierarchical clustering.
+plot(hier_clust_Ward_clust, cex=0.6)
+rect.hclust(hier_clust_Ward_clust, k=6, border = 1:6)
+```
+
+To examine how many data records have been categorized and that are allocated to clusters:
+
+```{r}
+# to cut decision tree into 6 groups
+sub_groups <- cutree(hier_clust_Ward_clust, k=6)
+# total no.of members in each single cluster.
+table(sub_groups)
+```
+
+Correlation Matrix:
+
+```{r}
+#install.packages("GGally")
+library(GGally)
+library(dplyr)
+Cereals_Data %>% 
+  select(calories, protein, fat, sodium, fiber, carbo, sugars, potass,vitamins,rating) %>% 
+  ggcorr(palette = "RdBu", label = TRUE, label_round =  2)
+```
+>>The correlation matrix helps us figure out if there's a strong or weak connection between variables. It also allows us to calculate descriptive statistics for a better understanding.
+
+The pvclust() function in the pvclust package helps assess the strength of clusters in hierarchical clustering using p-values from multiscale bootstrap resampling. Higher p-values indicate stronger support for clusters in the data. It's important to note that pvclust groups columns, so transpose your data before using the function. Suzuki provides guidance on interpreting the results.
+
+```{r}
+#install.packages("pvclust")
+library(pvclust)
+```
+
+
+```{r}
+fit.pv <- pvclust(Cereals, method.hclust = "ward.D2", method.dist = "euclidean")
+```
+
+
+```{r}
+plot(fit.pv)
+#dendogram with p-values
+pvrect(fit.pv, alpha =.95)
+```
+
+>>> In the initial clustering, we assess how stable each cluster is by looking at the average Jaccard coefficient across multiple bootstrap iterations. If a cluster's stability rating is below 0.6, it is considered unstable. Ratings between 0.6 and 0.75 suggest that the cluster identifies a pattern in the data, but there isn't strong agreement on which points should be grouped together. On the other hand, clusters with ratings above 0.85 are deemed exceptionally stable.
+1.It's most effective to enhance the Jaccard bootstrap on a cluster level.
+2.Minimize the occurrence of dissolved clusters, and aim to enhance the recovery of clusters while maintaining proximity to the original number.
+
+To Run Clusterboot()
+
+```{r}
+#install.packages("fpc")
+library(fpc)
+library(cluster)
+kbest_p <- 6
+cboot_hclust <- clusterboot(Cereals, clustermethod = hclustCBI, method = "ward.D2", k=kbest_p)
+```
+
+```{r}
+summary(cboot_hclust$result)
+```
+
+
+```{r}
+groups <- cboot_hclust$result$partition
+head(data.frame(groups))
+```
+
+
+```{r}
+cboot_hclust$bootmean
+### vector for cluster stabilities.
+```
+
+
+```{r}
+cboot_hclust$bootbrd
+### to Count how many times each group was broken apart. The clusterboot() function usually runs 100 bootstrap iterations by default.
+```
+
+
+>>>The findings suggest that Clusters 1 and 3 are quite reliable. However, Clusters 4 and 5 show some pattern recognition, but there's disagreement on which points should be grouped together. Clusters 2 and 5 are currently not stable.
+
+To Extract the clusters found by hclust()
+
+```{r}
+groups <- cutree(hier_clust_Ward_clust, k = 6)
+print_cluster <- function(labels, k)
+{
+  for (i in 1:k) 
+    {
+    print(paste("cluster",i))
+    print(Cereals_Data[labels==i,c("mfr","calories","protein","fat","sodium","fiber","carbo","sugars","potass","vitamins","rating")])
+  }
+}
+print_cluster(groups, 6)
+```
+>>>
+I chose clusters based on both statistical and nutritional values to create a healthy diet, but it's subjective as there's no clear measure for a healthy diet. I decided not to normalize the data to keep the original scale for better analysis.
+The cereal diet levels in the six clusters vary in richness, adequacy, and nutrient deficiencies. Cluster 1 has balanced guidelines, but limited options. Clusters 2 and 3 are not recommended due to poor ratings and high fat and sugar content.
+Clusters 4 and 5 have well-balanced nutrition and high consumer satisfaction, making them ideal for primary school cafeterias. So, for schools aiming to provide healthy meals, Clusters 4 and 5 are the best choices.
